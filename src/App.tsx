@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import './App.css'
+import { AppRoutes } from './App.routes';
+import { AuthProvider } from './components/authProvider/AuthProvider'
+import {Login} from './components/login/Login'
+export const App = () => {
+   
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <AuthProvider>
+      <div>
+        <header>
+          <p>Hello, world!</p>
+        </header>
+       <Login/>
+      </div>
+    </AuthProvider>
+    // <ReactKeycloakProvider authClient={keycloak}>
+    //   <div className="App">
+    //      <header className="App-header">
+    //        <p>Hello, world!</p>
+    //       </header>
+    //   </div>
+    // </ReactKeycloakProvider>
+  )
 }
-
-export default App;
