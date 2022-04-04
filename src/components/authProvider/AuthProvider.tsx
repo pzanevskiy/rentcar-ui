@@ -1,8 +1,9 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from '../../services/keycloak'
+import { Spinner } from 'react-bootstrap'
 
-const loadingComponent = <p>Loading...</p>
+const loadingComponent = <Spinner animation={'grow'} variant={'dark'} />
 
 const initialOptions = {
   onload: 'check-sso',
