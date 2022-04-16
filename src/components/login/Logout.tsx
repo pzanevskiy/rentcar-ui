@@ -11,9 +11,7 @@ export const Logout = () => {
 
   return (
     <div>
-      {keycloak?.authenticated ? (
-        <Button onClick={logout} variant="danger">Logout</Button>
-      ) : (<></>)}
+      <Button onClick={logout} variant="danger">Logout</Button>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useKeycloak } from "@react-keycloak/web"
 import { KeycloakTokenParsed } from "keycloak-js"
 import { useState } from "react"
-import axiosProvider from "../api/axiosProvider"
+import { useParams } from "react-router-dom"
 import { getHello } from "../api/requests"
 
 export const HelloComponent = () => {
@@ -14,12 +14,13 @@ export const HelloComponent = () => {
 
   return (
     <>
-      {keycloak.authenticated && <p>Hello, {getUserName()}</p>}
+      {keycloak.authenticated && <div>Hello, {getUserName()}</div>}
     </>
   )
 }
 
-export const Hello = () => {
+export const Hello = (props: any) => {
+  const { id } = useParams<{ id: string }>()
   const [data, setData] = useState<string>('')
 
   getHello().then((response: any) => {
@@ -27,7 +28,7 @@ export const Hello = () => {
   })
   return (
     <>
-      <p>Hello from route</p>
+      <p>Hello from route --- {id}</p>
       <p>Hello from api --- {data}</p>
     </>
   )

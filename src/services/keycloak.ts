@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js'
 
 const keycloakConfig = {
-    clientId: 'myclient',
+    clientId: 'oauth.rentcar',
     realm: 'myrealm',
     url: 'http://localhost:8082/'
 }

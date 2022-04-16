@@ -13,6 +13,6 @@ export const PrivateRoute = (props: { element: ReactNode, roles?: string[] }) =>
   }
 
   return !keycloak?.authenticated ?
-    <Navigate to="/login" /> : !isAuthorized(props.roles) && props.roles ?
-      <p>no access</p> : <>{props.element}</>
+    <Navigate to="/" /> : !isAuthorized(props.roles) && props.roles ?
+      <p>No access</p> : <>{props.element}</>
 }
