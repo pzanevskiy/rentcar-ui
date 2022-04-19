@@ -7,6 +7,8 @@ import { PrivateRoute } from "./utils/PrivateRoute"
 import { ChooseLocation } from './components/location/Location'
 import { Cars } from "./components/rentCars/Cars"
 import { AdminCars } from "./components/rentCars/AdminCars"
+import { Brands } from "./components/brands/Brands"
+import { AdminEnhancements } from "./components/enhancements/AdminEnhancements"
 
 export const AppRoutes = () => {
   const { initialized, keycloak } = useKeycloak()
@@ -19,16 +21,17 @@ export const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HelloComponent />} />
-        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/hello/:id" element={<PrivateRoute element={<Hello />} />} />
-        {/* <Route path="/login" element={keycloak.register()} /> */}
         <Route path="/location"
-          element={<PrivateRoute roles={['rentcar_user']} element={<ChooseLocation />} />}
-        />
+          element={<PrivateRoute roles={['rentcar_user']} element={<ChooseLocation />} />} />
         <Route path="/cars/:id"
           element={< PrivateRoute roles={['rentcar_user']} element={<Cars />} />} />
         <Route path="/cars"
           element={< PrivateRoute roles={['rentcar_admin']} element={<AdminCars />} />} />
+        <Route path="/brands"
+          element={< PrivateRoute roles={['rentcar_admin']} element={<Brands />} />} />
+        <Route path="/enhancements"
+          element={< PrivateRoute roles={['rentcar_admin']} element={<AdminEnhancements />} />} />
       </Routes>
     </BrowserRouter>
   )

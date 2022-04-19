@@ -13,7 +13,7 @@ export interface Car {
   carId: string,
   brand: string,
   model: string,
-  type: string
+  type: string,
   transmission: string,
   doorsCount: number
   seatsCount: number,
@@ -24,4 +24,15 @@ export interface Car {
 
 export interface GetCarsResponse {
   cars: Car[]
+}
+
+export interface Brand {
+  brandId?: string,
+  brandName?: string
+}
+
+export interface Enhancement {
+  enhancementId?: string,
+  description?: string,
+  price?: number
 }

@@ -54,6 +54,7 @@ export const ProfilePicture = () => {
       setAvatar(pictureUrl)
     }
   }
+  
   return (
     <>
       {
