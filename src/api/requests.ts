@@ -29,10 +29,32 @@ export const deleteCar = async (carId: string) => {
   return (await axiosProvider.delete(`/Cars/${carId}`)).data
 }
 
+// Brands
 export const getBrands = async () => {
   return (await axiosProvider.get('/Brands')).data
 }
 
+export const deleteBrand = async (brandId: string) => {
+  return (await axiosProvider.delete(`/Brands/${brandId}`)).data
+}
+
+// Models
+export const getModelsByBrandId = async (brandId: string) => {
+  return (await axiosProvider.get(`/Models/brand/${brandId}`)).data
+}
+
+export const deleteModel = async (modelId: string) => {
+  return (await axiosProvider.delete(`/Models/${modelId}`)).data
+}
+
+// CarTypes
+export const getCarTypes = async () => {
+  return (await axiosProvider.get(`/CarTypes`)).data
+}
+
+export const deleteCarType = async (carTypeId: string) => {
+  return (await axiosProvider.delete(`/CarTypes/${carTypeId}`)).data
+}
 
 // Enhancements
 export const getEnhancements = async () => {

@@ -10,16 +10,16 @@ export interface City {
 }
 
 export interface Car {
-  carId: string,
-  brand: string,
-  model: string,
-  type: string,
-  transmission: string,
-  doorsCount: number
-  seatsCount: number,
-  ac: boolean,
-  bagsCount: number,
-  price: number
+  carId?: string,
+  brand?: string,
+  model?: string,
+  type?: string,
+  transmission?: string,
+  doorsCount?: number
+  seatsCount?: number,
+  ac?: boolean,
+  bagsCount?: number,
+  price?: number
 }
 
 export interface GetCarsResponse {
@@ -31,8 +31,19 @@ export interface Brand {
   brandName?: string
 }
 
+export interface Model {
+  modelId?: string,
+  modelName?: string,
+  brandId?: string,
+}
+
 export interface Enhancement {
   enhancementId?: string,
   description?: string,
   price?: number
+}
+
+export interface CarType {
+  carTypeId?: string,
+  typeName?: string
 }

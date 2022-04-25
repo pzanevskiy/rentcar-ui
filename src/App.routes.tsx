@@ -9,6 +9,7 @@ import { Cars } from "./components/rentCars/Cars"
 import { AdminCars } from "./components/rentCars/AdminCars"
 import { Brands } from "./components/brands/Brands"
 import { AdminEnhancements } from "./components/enhancements/AdminEnhancements"
+import { CarTypes } from "./components/CarTypes/AdminCarTypes"
 
 export const AppRoutes = () => {
   const { initialized, keycloak } = useKeycloak()
@@ -32,6 +33,8 @@ export const AppRoutes = () => {
           element={< PrivateRoute roles={['rentcar_admin']} element={<Brands />} />} />
         <Route path="/enhancements"
           element={< PrivateRoute roles={['rentcar_admin']} element={<AdminEnhancements />} />} />
+        <Route path="/cartypes"
+          element={< PrivateRoute roles={['rentcar_admin']} element={<CarTypes />} />} />
       </Routes>
     </BrowserRouter>
   )

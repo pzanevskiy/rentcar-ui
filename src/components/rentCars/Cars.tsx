@@ -116,7 +116,7 @@ export const Cars = () => {
                 <CardActionArea onClick={handleOpen}>
                   <CardMedia sx={{ textAlign: 'center' }} component="div">
                     <DirectionsCarFilledTwoToneIcon sx={{
-                      color: stringToColorWithString(`${car.brand[0]}${car.model[0]}`),
+                      color: stringToColorWithString(`${car.brand![0]}${car.model![0]}`),
                       fontSize: 250
                     }} />
                   </CardMedia>

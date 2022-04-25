@@ -1,6 +1,8 @@
-import { InputLabel, Select, OutlinedInput, Box, Chip, MenuItem, FormControl } from "@mui/material"
-import { useState, useEffect } from "react"
-import { Enhancement, getEnhancements } from "../../api"
+import {
+  InputLabel, Select, OutlinedInput,
+  Box, Chip, MenuItem, FormControl
+} from "@mui/material"
+import { Enhancement } from "../../api"
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -17,33 +19,6 @@ export const Enhancements = (props: {
   selectedEnhancements: Enhancement[],
   handleChange: (e: any) => void
 }) => {
-  // const [enhancements, setEnhancements] = useState<Enhancement[]>([])
-  // const [selectedEnh, setSelectedEnh] = useState<Enhancement[]>([])
-
-  // useEffect(() => {
-  //   getEnhancementsList()
-  // }, [])
-
-  // const getEnhancementsList = () => {
-  //   getEnhancements()
-  //     .then((res: any) => {
-  //       setEnhancements(res)
-  //     })
-  // }
-
-  // const handleChange = (value: any) => {
-  //   const description = value.find((obj: any) => typeof obj === 'string')
-  //   const enhancement: Enhancement = enhancements.find((e: Enhancement) => e?.description == description)!
-
-  //   if (selectedEnh.find((e: Enhancement) => e?.description == description)) {
-  //     const fiteredSelection = selectedEnh.filter(x => x.description != description)
-  //     setSelectedEnh([...fiteredSelection])
-
-  //   } else {
-  //     setSelectedEnh([...selectedEnh, enhancement])
-
-  //   }
-  // }
 
   return (
     <div>

@@ -79,7 +79,7 @@ export const AdminEnhancements = () => {
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
-        <GridToolbarExport csvOptions={{ fileName: 'Cars' }} />
+        <GridToolbarExport csvOptions={{ fileName: 'Enhancements' }} />
         <AddButton onClick={add} />
         <DeleteButton onClick={remove} />
       </GridToolbarContainer>
@@ -139,7 +139,6 @@ export const AdminEnhancements = () => {
           checkboxSelection
           components={{ Toolbar: CustomToolBar, NoRowsOverlay: CustomNoRowsOverlay }}
           onSelectionModelChange={(i) => { setSelectedEnh(i) }} />
-
       </div>
     </div>
   )

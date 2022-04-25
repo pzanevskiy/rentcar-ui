@@ -1,15 +1,26 @@
-import { Box, Button, Fade, Modal, TextField, Typography } from "@mui/material"
+import {
+  Box, Button, Dialog,
+  DialogActions, DialogContent,
+  DialogContentText, DialogTitle, Fade,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Modal, OutlinedInput, Select, Switch, TextField, Typography
+} from "@mui/material"
 import {
   DataGrid, GridColDef, GridToolbarColumnsButton,
   GridToolbarContainer, GridToolbarDensitySelector,
   GridToolbarExport, GridToolbarFilterButton
 } from "@mui/x-data-grid"
 import { useState, useEffect } from "react"
-import { Car, deleteCar, getAllCars } from "../../api"
+import { Brand, Car, CarType, deleteCar, getAllCars, getBrands, getCarTypes, getModelsByBrandId, Model } from "../../api"
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { NoData } from "../../utils/NoData"
 import Backdrop from '@mui/material/Backdrop'
+import { addCar } from "../../api/responses"
 
 const CustomNoRowsOverlay = () => {
   return (<><NoData message={`No cars available`} /></>)
@@ -18,11 +29,51 @@ const CustomNoRowsOverlay = () => {
 export const AdminCars = () => {
   const [cars, setCars] = useState<Car[]>([])
   const [selectedCars, setSelectedCars] = useState<any>([])
+  const [car, setCar] = useState<Car>({
+    brand: '',
+    model: '',
+    type: '',
+    transmission: '',
+    doorsCount: 0,
+    seatsCount: 0,
+    bagsCount: 0,
+    ac: false
+  })
+
+  const [brands, setBrands] = useState<Brand[]>([])
+  const [models, setModels] = useState<Model[]>([])
+  const [types, setTypes] = useState<CarType[]>([])
 
   // Modal
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleOpen = () => {
+    getBrands()
+      .then((res: Brand[]) => {
+        setBrands(res)
+      })
+
+    getCarTypes()
+      .then((res: CarType[]) => {
+        setTypes(res)
+      })
+
+    setOpen(true)
+  }
+  const handleClose = () => {
+    console.log(car)
+    addCar(car)
+      .then((r: any) => {
+        console.log(r)
+        console.log('added')
+        getCarsList()
+      })
+      .catch((e: any) => {
+        console.log('error while adding car')
+      })
+    setOpen(false)
+  }
+
   const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -48,16 +99,16 @@ export const AdminCars = () => {
   const CustomToolBar = () => {
     const remove = () => {
       console.log(selectedCars);
-      if (selectedCars.length > 0)
+      // debugger
+      if (selectedCars.length > 0) {
         selectedCars.map((id: string) => deleteCar(id)
           .then((res: any) => {
             getCarsList()
+          })
+          .catch((e: any) => {
+            console.log(`no delete`)
           }))
-      console.log(`no delete`)
-    }
-    const add = () => {
-      console.log('added');
-
+      }
     }
     return (
       <GridToolbarContainer>
@@ -122,29 +173,132 @@ export const AdminCars = () => {
       width: 75
     }
   ]
-  
+
+  const handleBrandSelect = (brand: string) => {
+    const brandId = brands.find((i: Brand) => i.brandName === brand)?.brandId
+    setCar({ ...car, brand: brand })
+
+    getModelsByBrandId(brandId!)
+      .then((res: Model[]) => {
+        setModels(res)
+      })
+  }
+
   return (
     <div>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <TextField id="outlined-basic" label="Outlined" variant="outlined" />
-          </Box>
-        </Fade>
-      </Modal>
+      <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth='sm'>
+        <DialogTitle>Subscribe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Add car</DialogContentText>
+          <Grid container>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="brand-label">Brand</InputLabel>
+                <Select
+                  labelId="brand-label"
+                  id="brandId"
+                  value={car?.brand}
+                  label="Brand"
+                  onChange={(e: any) => handleBrandSelect(e.target.value)}
+                >
+                  {brands.map((brand: Brand) =>
+                    (<MenuItem key={brand.brandId} value={brand.brandName}>{brand.brandName}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="model-label">Model</InputLabel>
+                <Select
+                  labelId="model-label"
+                  id="modelId"
+                  value={car?.model}
+                  label="Model"
+                  onChange={(e: any) => setCar({ ...car, model: e.target.value })}
+                >
+                  {models.map((model: Model) =>
+                    (<MenuItem key={model.modelId} value={model.modelName}>{model.modelName}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="type-label">Type</InputLabel>
+                <Select
+                  labelId="type-label"
+                  id="typeId"
+                  value={car?.type}
+                  label="Type"
+                  onChange={(e: any) => setCar({ ...car, type: e.target.value })}
+                >
+                  {types.map((type: CarType) =>
+                    (<MenuItem key={type.carTypeId} value={type.typeName}>{type.typeName}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="tr-label">Transmission</InputLabel>
+                <Select
+                  labelId="tr-label"
+                  id="trId"
+                  value={car?.transmission}
+                  label="Transmission"
+                  onChange={(e: any) => setCar({ ...car, transmission: e.target.value })}
+                >
+                  <MenuItem value={'Auto'}>Auto</MenuItem>
+                  <MenuItem value={'Manual'}>Manual</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="doors-label">Doors</InputLabel>
+                <OutlinedInput
+                  id="doors-amount"
+                  value={car.doorsCount}
+                  onChange={(e: any) => setCar({ ...car, doorsCount: e.target.value })}
+                  label="Doors"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="doors-label">Seats</InputLabel>
+                <OutlinedInput
+                  id="seats-amount"
+                  value={car.seatsCount}
+                  onChange={(e: any) => setCar({ ...car, seatsCount: e.target.value })}
+                  label="Seats"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="doors-label">Bags</InputLabel>
+                <OutlinedInput
+                  id="bags-amount"
+                  value={car.bagsCount}
+                  onChange={(e: any) => setCar({ ...car, bagsCount: e.target.value })}
+                  label="Bags"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControlLabel
+                control={
+                  <Switch checked={car.ac} onChange={(e: any) => setCar({ ...car, ac: e.target.checked })} name="ac" />
+                }
+                label="A/C"
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Add</Button>
+        </DialogActions>
+      </Dialog>
       <div style={{ height: 400, width: '100%' }}>
         <DataGrid
           columns={columns}
