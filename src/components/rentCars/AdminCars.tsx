@@ -1,13 +1,14 @@
 import {
-  Box, Button, Dialog,
+  Button, Dialog,
   DialogActions, DialogContent,
-  DialogContentText, DialogTitle, Fade,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   Grid,
   InputLabel,
+  Link,
   MenuItem,
-  Modal, OutlinedInput, Select, Switch, TextField, Typography
+  OutlinedInput, Select, Switch
 } from "@mui/material"
 import {
   DataGrid, GridColDef, GridToolbarColumnsButton,
@@ -15,11 +16,13 @@ import {
   GridToolbarExport, GridToolbarFilterButton
 } from "@mui/x-data-grid"
 import { useState, useEffect } from "react"
-import { Brand, Car, CarType, deleteCar, getAllCars, getBrands, getCarTypes, getModelsByBrandId, Model } from "../../api"
+import {
+  Brand, Car, CarType, deleteCar, getAllCars,
+  getBrands, getCarTypes, getModelsByBrandId, Model
+} from "../../api"
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { NoData } from "../../utils/NoData"
-import Backdrop from '@mui/material/Backdrop'
 import { addCar } from "../../api/responses"
 
 const CustomNoRowsOverlay = () => {
@@ -60,30 +63,17 @@ export const AdminCars = () => {
 
     setOpen(true)
   }
-  const handleClose = () => {
-    console.log(car)
+  const handleClose = () => setOpen(false)
+
+  const handleAdd = () => {
     addCar(car)
       .then((r: any) => {
-        console.log(r)
-        console.log('added')
         getCarsList()
       })
       .catch((e: any) => {
         console.log('error while adding car')
       })
     setOpen(false)
-  }
-
-  const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
   }
 
   useEffect(() => {
@@ -96,6 +86,7 @@ export const AdminCars = () => {
         setCars(response)
       })
   }
+
   const CustomToolBar = () => {
     const remove = () => {
       console.log(selectedCars);
@@ -110,6 +101,7 @@ export const AdminCars = () => {
           }))
       }
     }
+
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
@@ -130,7 +122,7 @@ export const AdminCars = () => {
     {
       field: 'id',
       headerName: 'id',
-      width: 200,
+      width: 300,
     },
     {
       field: 'brand',
@@ -171,6 +163,16 @@ export const AdminCars = () => {
       field: 'bags',
       headerName: 'Bags',
       width: 75
+    },
+    {
+      field: 'pictureLink',
+      headerName: 'Picture',
+      width: 100,
+      renderCell: (val)=>{
+        return(
+          <Link target='_blank' href={val.row['pictureLink']}>Picture</Link>
+        )
+      }
     }
   ]
 
@@ -187,9 +189,8 @@ export const AdminCars = () => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth='sm'>
-        <DialogTitle>Subscribe</DialogTitle>
+        <DialogTitle>Add car</DialogTitle>
         <DialogContent>
-          <DialogContentText>Add car</DialogContentText>
           <Grid container>
             <Grid item m={1} xs={12} textAlign='center'>
               <FormControl sx={{ minWidth: '75%' }} size="small">
@@ -264,7 +265,7 @@ export const AdminCars = () => {
             </Grid>
             <Grid item m={1} xs={12} textAlign='center'>
               <FormControl sx={{ minWidth: '75%' }} size="small">
-                <InputLabel id="doors-label">Seats</InputLabel>
+                <InputLabel id="seats-label">Seats</InputLabel>
                 <OutlinedInput
                   id="seats-amount"
                   value={car.seatsCount}
@@ -275,12 +276,23 @@ export const AdminCars = () => {
             </Grid>
             <Grid item m={1} xs={12} textAlign='center'>
               <FormControl sx={{ minWidth: '75%' }} size="small">
-                <InputLabel id="doors-label">Bags</InputLabel>
+                <InputLabel id="bags-label">Bags</InputLabel>
                 <OutlinedInput
                   id="bags-amount"
                   value={car.bagsCount}
                   onChange={(e: any) => setCar({ ...car, bagsCount: e.target.value })}
                   label="Bags"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item m={1} xs={12} textAlign='center'>
+              <FormControl sx={{ minWidth: '75%' }} size="small">
+                <InputLabel id="picture-label">Link to the picture</InputLabel>
+                <OutlinedInput
+                  id="picture"
+                  value={car.pictureLink}
+                  onChange={(e: any) => setCar({ ...car, pictureLink: e.target.value })}
+                  label="Link to the picture"
                 />
               </FormControl>
             </Grid>
@@ -296,7 +308,7 @@ export const AdminCars = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Add</Button>
+          <Button onClick={handleAdd}>Add</Button>
         </DialogActions>
       </Dialog>
       <div style={{ height: 400, width: '100%' }}>
@@ -311,7 +323,8 @@ export const AdminCars = () => {
             doors: car.doorsCount,
             seats: car.seatsCount,
             ac: car.ac,
-            bags: car.bagsCount
+            bags: car.bagsCount,
+            pictureLink: car.pictureLink
           }))}
           pageSize={5}
           rowsPerPageOptions={[5]}

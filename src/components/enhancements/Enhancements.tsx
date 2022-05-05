@@ -22,11 +22,12 @@ export const Enhancements = (props: {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="demo-multiple-chip-label">Select extras</InputLabel>
+      <FormControl sx={{ minWidth: '75%' }}>
+        <InputLabel id="extras-label">Select extras</InputLabel>
         <Select
-          labelId="demo-multiple-chip-label"
-          id="demo-multiple-chip"
+          labelId="extras-label"
+          label='Select extras'
+          id="extras"
           multiple
           value={props.selectedEnhancements}
           onChange={(e) => props.handleChange(e.target.value)}
@@ -41,11 +42,8 @@ export const Enhancements = (props: {
           MenuProps={MenuProps}
         >
           {props.enhancements.map((enh: Enhancement) => (
-            <MenuItem
-              key={enh.enhancementId}
-              value={enh.description}
-            >
-              {enh.description} - {enh.price}
+            <MenuItem key={enh.enhancementId} value={enh.description}>
+              {enh.description} - {enh.price}$
             </MenuItem>
           ))}
         </Select>

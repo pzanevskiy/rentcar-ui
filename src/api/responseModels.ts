@@ -9,6 +9,12 @@ export interface City {
   countryId?: string
 }
 
+export interface Address {
+  orderAddressId?: string,
+  orderAddressName?: string,
+  cityId?: string
+}
+
 export interface Car {
   carId?: string,
   brand?: string,
@@ -19,7 +25,8 @@ export interface Car {
   seatsCount?: number,
   ac?: boolean,
   bagsCount?: number,
-  price?: number
+  price?: number,
+  pictureLink?: string
 }
 
 export interface GetCarsResponse {
@@ -46,4 +53,14 @@ export interface Enhancement {
 export interface CarType {
   carTypeId?: string,
   typeName?: string
+}
+
+export interface Order {
+  carId: string,
+  cityId?: string,
+  pickUpAddressId?: string
+  returnAddressId?: string,
+  enhancements: string[],
+  startDate?: Date | null,
+  endDate?: Date | null,
 }

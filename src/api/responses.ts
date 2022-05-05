@@ -1,5 +1,5 @@
 import axiosProvider from "./axiosProvider"
-import { Car, Enhancement, Model } from "./responseModels"
+import { Car, Enhancement, Model, Order } from "./responseModels"
 
 export const addEnhancement = async (enhancement?: Enhancement) => {
   const data = new FormData()
@@ -28,14 +28,18 @@ export const addCarType = async (typeName: string) => {
 }
 
 export const addCar = async (car: Car) => {
-  const data = new FormData()
-  data.append('Brand', car.brand!)
-  data.append('Model', car.model!)
-  data.append('Type', car.type!)
-  data.append('Transmission', car.transmission!)
-  data.append('DoorsCount', car.doorsCount?.toString()!)
-  data.append('SeatsCount', car.seatsCount?.toString()!)
-  data.append('BagsCount', car.bagsCount?.toString()!)
-  data.append('Ac', car.ac ? 'true' : 'false')
-  return await axiosProvider.post('/Cars', data)
+  car.brand = 'https://google.com'
+  return await axiosProvider.post('/Cars', car, {
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const addOrder = async (order: Order) => {
+  return await axiosProvider.post('/Orders', order, {
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
 }
