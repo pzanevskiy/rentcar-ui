@@ -3,6 +3,7 @@ import { KeycloakTokenParsed } from "keycloak-js"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { getHello } from "../api/requests"
+import keycloak from "../services/keycloak"
 
 export const HelloComponent = () => {
   const { keycloak } = useKeycloak()

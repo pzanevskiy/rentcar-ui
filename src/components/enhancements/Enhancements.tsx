@@ -22,7 +22,7 @@ export const Enhancements = (props: {
 
   return (
     <div>
-      <FormControl sx={{ minWidth: '75%' }}>
+      <FormControl sx={{ width: '100%' }}>
         <InputLabel id="extras-label">Select extras</InputLabel>
         <Select
           labelId="extras-label"

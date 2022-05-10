@@ -64,3 +64,8 @@ export const getEnhancements = async () => {
 export const deleteEnhancement = async (enhancementId: string) => {
   return (await axiosProvider.delete(`/Enhancements/${enhancementId}`)).data
 }
+
+// Orders
+export const getUserOrders = async () => {
+  return (await axiosProvider.get(`/Orders/user`)).data
+}

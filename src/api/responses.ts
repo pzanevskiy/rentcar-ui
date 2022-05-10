@@ -28,7 +28,6 @@ export const addCarType = async (typeName: string) => {
 }
 
 export const addCar = async (car: Car) => {
-  car.brand = 'https://google.com'
   return await axiosProvider.post('/Cars', car, {
     headers:{
       'Content-Type': 'application/json'

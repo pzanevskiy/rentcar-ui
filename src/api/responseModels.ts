@@ -63,4 +63,18 @@ export interface Order {
   enhancements: string[],
   startDate?: Date | null,
   endDate?: Date | null,
+  totalAmount?: number
+}
+
+export interface DetailedOrder {
+  orderId: string,
+  userId: string,
+  statusName: string,
+  startDate: Date | null,
+  endDate: Date | null,
+  totalAmount: number
+  pickUpLocation: string,
+  returnLocation: string,
+  car: Car,
+  enhancements: Enhancement[]
 }

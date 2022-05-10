@@ -6,7 +6,7 @@ import {
   DialogTitle, InputLabel, Select,
   FormControl, MenuItem, Checkbox, TextField,
   Accordion, AccordionDetails, AccordionSummary,
-  CardActions, FormControlLabel, OutlinedInput
+  CardActions, FormControlLabel, OutlinedInput, Paper,
 } from "@mui/material"
 import { useEffect, useState } from "react"
 import {
@@ -14,22 +14,17 @@ import {
   Car, Enhancement, getAddresses, getCars,
   GetCarsResponse, getEnhancements, Order
 } from "../../api"
-import DirectionsCarRoundedIcon from '@mui/icons-material/DirectionsCarRounded'
-import SensorDoorRoundedIcon from '@mui/icons-material/SensorDoorRounded'
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
-import AirlineSeatReclineExtraRoundedIcon from '@mui/icons-material/AirlineSeatReclineExtraRounded'
-import WorkRoundedIcon from '@mui/icons-material/WorkRounded'
-import AcUnitRoundedIcon from '@mui/icons-material/AcUnitRounded'
-import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded'
 import { useParams } from "react-router-dom"
 import { NoData } from "../../utils/NoData"
 import { Enhancements } from "../enhancements/Enhancements"
 import { addOrder } from "../../api/responses"
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { add } from "date-fns"
-import { DatePicker } from "@mui/x-date-pickers"
+import { add, differenceInDays, differenceInHours, differenceInMilliseconds } from "date-fns"
+import { DatePicker, DateTimePicker } from "@mui/x-date-pickers"
 import { CarFilterOptions } from "../../types/CarFilterOptions"
+import { CarInfo } from "./CarInfo"
+import { CarImage } from "./CarImage"
 
 const date = new Date()
 
@@ -40,7 +35,8 @@ const defaultOrder: Order = {
   returnAddressId: '',
   startDate: date,
   endDate: add(date, { days: 1 }),
-  enhancements: []
+  enhancements: [],
+  totalAmount: 0
 }
 
 const defaultFilter: CarFilterOptions = {
@@ -52,6 +48,7 @@ const defaultFilter: CarFilterOptions = {
 export const Cars = () => {
   const { id } = useParams<{ id: string }>()
   const [cars, setCars] = useState<Car[]>()
+  const [selectedCar, setSelectedCar] = useState<Car>({})
   const [addresses, setAddresses] = useState<Address[]>([])
   const [enhancements, setEnhancements] = useState<Enhancement[]>([])
   const [selectedEnh, setSelectedEnh] = useState<Enhancement[]>([])
@@ -74,10 +71,11 @@ export const Cars = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = (carId: string) => {
     setOrder({ ...order, carId: carId })
+    setSelectedCar(cars?.find(v => v.carId === carId)!)
     setOpen(true)
   }
   const handleClose = () => {
-    setOrder({ ...defaultOrder, cityId: id, enhancements: [] })
+    setOrder({ ...defaultOrder, cityId: id, enhancements: [], totalAmount: 0 })
     setSelectedEnh([])
     setIsSame(true)
     setOpen(false)
@@ -85,16 +83,13 @@ export const Cars = () => {
 
   useEffect(() => {
     getCarsList()
-  }, [])
-
-  useEffect(() => {
     getEnhancementsList()
-  }, [])
-
-  useEffect(() => {
     getAddressesList()
   }, [])
 
+  useEffect(() => {
+    calculateTotalAmount()
+  }, [order.startDate, order.endDate, order.enhancements, order.carId])
 
   const getEnhancementsList = () => {
     getEnhancements()
@@ -105,11 +100,14 @@ export const Cars = () => {
 
   const handleOrder = () => {
     const o = order
+    console.log({ ...o })
     const returnId = order.pickUpAddressId
     if (isSame) {
       o.returnAddressId = returnId
       setOrder({ ...order, returnAddressId: returnId })
     }
+    handleClose()
+
     addOrder(order)
       .then((r: any) => {
         console.log(`rent success! orderId - ${r.data}`)
@@ -134,6 +132,22 @@ export const Cars = () => {
       })
       setSelectedEnh([...selectedEnh, enhancement])
     }
+  }
+
+  const calculateTotalAmount = () => {
+    const carPrice: number = selectedCar.price!
+    console.log(carPrice)
+    const totalExtras = selectedEnh.reduce((acc: number, enh: Enhancement) => {
+      return acc + enh?.price!
+    }, carPrice!)
+    console.log(totalExtras)
+    const diff = differenceInMilliseconds(order.endDate!, order.startDate!)
+    const dayDiff: number = Math.ceil(diff / (1000 * 60 * 60 * 24))
+    console.log(`day diff - ${dayDiff}`)
+
+    const totalAmount: number = dayDiff >= 0 ? parseFloat((totalExtras * dayDiff).toFixed(2)) : 0
+
+    setOrder({ ...order, totalAmount: totalAmount })
   }
 
   const getCarsList = () => {
@@ -191,42 +205,31 @@ export const Cars = () => {
 
     return filteredCarsInternal.sort((a, b) => a.price! - b.price!).reverse()
   }
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth='md'>
         <DialogTitle>Rent car</DialogTitle>
         <DialogContent>
           <Grid container>
-            <Grid item xs={isSame ? 12 : 6}>
-              <DialogContentText mb={1}>Pick up address</DialogContentText>
-              <FormControl sx={{ m: '1', minWidth: '75%' }}>
-                <InputLabel id="puAddress-label">Select address</InputLabel>
-                <Select
-                  label='Select address'
-                  labelId="puAddress-label"
-                  id="puAddress"
-                  value={order.pickUpAddressId}
-                  onChange={(e: any) => setOrder({ ...order, pickUpAddressId: e.target.value })}
-                >
-                  {addresses.map((address: Address) => (
-                    <MenuItem key={address.orderAddressId} value={address.orderAddressId}>
-                      {address.orderAddressName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <Grid item xs={12} sm={6} pr={3}>
+              <DialogContentText mb={1}>Car Info</DialogContentText>
+              <Paper elevation={3} sx={{ m: 1 }}>
+                <CarImage src={selectedCar?.pictureLink!} alt={`${selectedCar?.brand} ${selectedCar?.model}`} />
+              </Paper>
+              <CarInfo car={selectedCar} />
             </Grid>
-            {!isSame &&
-              <Grid item xs={6}>
-                <DialogContentText mb={1}>Return address</DialogContentText>
-                <FormControl sx={{ m: '1', minWidth: '75%' }}>
-                  <InputLabel id="returnAddress-label">Select address</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <Grid item xs={12} my={1} mr={2}>
+                <DialogContentText mb={1}>Pick up address</DialogContentText>
+                <FormControl sx={{ m: '1', width: '100%' }}>
+                  <InputLabel id="puAddress-label">Select address</InputLabel>
                   <Select
-                    labelId="returnAddress-label"
                     label='Select address'
-                    id="returnAddress"
-                    value={order.returnAddressId}
-                    onChange={(e: any) => setOrder({ ...order, returnAddressId: e.target.value })}
+                    labelId="puAddress-label"
+                    id="puAddress"
+                    value={order.pickUpAddressId}
+                    onChange={(e: any) => setOrder({ ...order, pickUpAddressId: e.target.value })}
                   >
                     {addresses.map((address: Address) => (
                       <MenuItem key={address.orderAddressId} value={address.orderAddressId}>
@@ -235,71 +238,90 @@ export const Cars = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>}
-            <Grid item xs={12}>
-              <FormControlLabel
-                sx={{ m: 1 }}
-                labelPlacement="start"
-                label="Return at pick-up location"
-                control={<Checkbox checked={isSame}
-                  onChange={(e: any) => setIsSame(e.target.checked)} />}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DialogContentText my={2}>Choose period</DialogContentText>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl sx={{ m: '1', minWidth: '75%' }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    renderInput={(params) => <TextField {...params} />}
-                    label="From"
-                    value={order.startDate}
-                    onChange={(newValue) => {
-                      setOrder({ ...order, startDate: newValue });
-                    }}
-                    minDate={date}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl sx={{ m: '1', minWidth: '75%' }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    renderInput={(params) => <TextField {...params} />}
-                    label="To"
-                    value={order.endDate}
-                    onChange={(newValue) => {
-                      setOrder({ ...order, endDate: newValue });
-                    }}
-                    minDate={date}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <DialogContentText my={2}>Extras</DialogContentText>
-            </Grid>
-            <Grid item xs={12}>
-              <Enhancements enhancements={enhancements}
-                selectedEnhancements={selectedEnh}
-                handleChange={handleChange}
-              />
+              </Grid>
+              {!isSame &&
+                <Grid item xs={12} my={1} mr={2}>
+                  <DialogContentText mb={1}>Return address</DialogContentText>
+                  <FormControl sx={{ m: '1', width: '100%' }}>
+                    <InputLabel id="returnAddress-label">Select address</InputLabel>
+                    <Select
+                      labelId="returnAddress-label"
+                      label='Select address'
+                      id="returnAddress"
+                      value={order.returnAddressId}
+                      onChange={(e: any) => setOrder({ ...order, returnAddressId: e.target.value })}
+                    >
+                      {addresses.map((address: Address) => (
+                        <MenuItem key={address.orderAddressId} value={address.orderAddressId}>
+                          {address.orderAddressName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>}
+              <Grid item xs={12}>
+                <FormControlLabel
+                  sx={{ m: 1 }}
+                  labelPlacement="start"
+                  label="Return at pick-up location"
+                  control={<Checkbox checked={isSame}
+                    onChange={(e: any) => setIsSame(e.target.checked)} />}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <DialogContentText my={2}>Choose period</DialogContentText>
+              </Grid>
+              <Grid item xs={12} alignItems='center' my={1} mr={2}>
+                <FormControl sx={{ m: '1', width: '100%' }}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                      renderInput={(params) => <TextField {...params} />}
+                      label="From"
+                      value={order.startDate}
+                      onChange={(newValue) => {
+                        setOrder({ ...order, startDate: newValue })
+                      }}
+                      minDate={date}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} alignItems='center' my={1} mr={2}>
+                <FormControl sx={{ m: '1', width: '100%' }}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                      renderInput={(params) => <TextField {...params} />}
+                      label="To"
+                      value={order.endDate}
+                      onChange={(newValue) => {
+                        setOrder({ ...order, endDate: newValue })
+                      }}
+                      minDate={date}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <DialogContentText my={2}>Extras</DialogContentText>
+              </Grid>
+              <Grid item xs={12} mr={2}>
+                <Enhancements enhancements={enhancements}
+                  selectedEnhancements={selectedEnh}
+                  handleChange={handleChange}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
+          <Typography>Total amount: {order.totalAmount}$</Typography>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleOrder}>Add</Button>
+          <Button onClick={handleOrder}>Rent car</Button>
         </DialogActions>
       </Dialog>
       <div>
         <Grid container p={2} spacing={1}>
           <Grid item height={'100%'} xs={12} sm={3} md={3}>
-            <Grid item xs={12} my={1}>
-              <Typography></Typography>
-            </Grid>
             <Grid item xs={12} my={1}>
               <FormControl sx={{ width: '100%' }}>
                 <InputLabel id="types-filter-label">Types</InputLabel>
@@ -312,7 +334,7 @@ export const Cars = () => {
                     const value = e.target.value
                     setFilter({ ...filter, types: typeof value === 'string' ? value.split(',') : value })
                   }}
-                  input={<OutlinedInput label="Types" sx={{textAlign: 'center'}} />}
+                  input={<OutlinedInput label="Types" />}
                   MenuProps={MenuProps}
                 >
                   {filterValues.allowedTypes.map((type: string) => (<MenuItem key={type} value={type}>{type}</MenuItem>))}
@@ -372,24 +394,18 @@ export const Cars = () => {
                               sx={{ minHeight: '125px', maxHeight: '100%', maxWidth: '100%', display: 'block' }}
                               component="img"
                               image={car.pictureLink}
+                              loading='lazy'
                               alt={`${car.brand} ${car.model}`} />
                           </Grid>
                         </Grid>
                       </AccordionSummary>
                       <AccordionDetails>
                         <CardContent>
-                          <Typography>{car.brand} {car.model}</Typography>
-                          <Typography><DirectionsCarRoundedIcon /> {car.type}</Typography>
-                          <Typography><SettingsRoundedIcon /> {car.transmission}</Typography>
-                          <Typography><SensorDoorRoundedIcon /> {car.doorsCount}</Typography>
-                          <Typography><AirlineSeatReclineExtraRoundedIcon /> {car.seatsCount}</Typography>
-                          <Typography><WorkRoundedIcon /> {car.bagsCount}</Typography>
-                          <Typography><AcUnitRoundedIcon /> {car.ac ? 'A/C' : 'No A/C'}</Typography>
-                          <Typography><AttachMoneyRoundedIcon /> {car.price}$ | day</Typography>
+                          <CarInfo car={car} />
                         </CardContent>
                         <CardActions>
                           <Button onClick={() => handleOpen(car.carId!)}>
-                            <Typography>RENT</Typography>
+                            <Typography>Rent</Typography>
                           </Button>
                         </CardActions>
                       </AccordionDetails>

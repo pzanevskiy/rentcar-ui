@@ -22,13 +22,12 @@ export const Header = () => {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="me-auto">
           <Nav.Link href="/location">Rent</Nav.Link>
-          <Nav.Link href="#pricing">Orders</Nav.Link>
+          <Nav.Link href="/orders">Orders</Nav.Link>
         </Nav>
       </Navbar.Collapse>
       <Navbar.Text>
         <Container>
           <Row>
-            
             <Col className="col-auto text-white my-2">
               <HelloComponent />
             </Col>
