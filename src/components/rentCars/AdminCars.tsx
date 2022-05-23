@@ -24,24 +24,25 @@ import ClearRoundedIcon from '@mui/icons-material/ClearRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { NoData } from "../../utils/NoData"
 import { addCar } from "../../api/responses"
+import { CarImage } from "./CarImage"
 
 const CustomNoRowsOverlay = () => {
   return (<><NoData message={`No cars available`} /></>)
 }
-
+const defaultCar: Car = {
+  brand: '',
+  model: '',
+  type: '',
+  transmission: '',
+  doorsCount: 0,
+  seatsCount: 0,
+  bagsCount: 0,
+  ac: false
+}
 export const AdminCars = () => {
   const [cars, setCars] = useState<Car[]>([])
   const [selectedCars, setSelectedCars] = useState<any>([])
-  const [car, setCar] = useState<Car>({
-    brand: '',
-    model: '',
-    type: '',
-    transmission: '',
-    doorsCount: 0,
-    seatsCount: 0,
-    bagsCount: 0,
-    ac: false
-  })
+  const [car, setCar] = useState<Car>(defaultCar)
 
   const [brands, setBrands] = useState<Brand[]>([])
   const [models, setModels] = useState<Model[]>([])
@@ -69,6 +70,7 @@ export const AdminCars = () => {
     addCar(car)
       .then((r: any) => {
         getCarsList()
+        setCar(defaultCar)
       })
       .catch((e: any) => {
         console.log('error while adding car')
@@ -166,11 +168,21 @@ export const AdminCars = () => {
     },
     {
       field: 'pictureLink',
+      headerName: 'Link',
+      width: 100,
+      renderCell: (val) => {
+        return (
+          <Link target='_blank' href={val.row['pictureLink']}>Picture</Link>
+        )
+      }
+    },
+    {
+      field: 'picture',
       headerName: 'Picture',
       width: 100,
-      renderCell: (val)=>{
-        return(
-          <Link target='_blank' href={val.row['pictureLink']}>Picture</Link>
+      renderCell: (val) => {
+        return (
+          <CarImage src={val.row['pictureLink']} alt={val.row['brand']} />
         )
       }
     }
@@ -311,7 +323,7 @@ export const AdminCars = () => {
           <Button onClick={handleAdd}>Add</Button>
         </DialogActions>
       </Dialog>
-      <div style={{ height: 400, width: '100%' }}>
+      <div style={{ height: '700px', width: '100%' }}>
         <DataGrid
           columns={columns}
           rows={cars?.map((car: Car) => ({
@@ -326,9 +338,8 @@ export const AdminCars = () => {
             bags: car.bagsCount,
             pictureLink: car.pictureLink
           }))}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          density="compact"
+          pageSize={10}
+          density="comfortable"
           checkboxSelection
           components={{ Toolbar: CustomToolBar, NoRowsOverlay: CustomNoRowsOverlay }}
           onSelectionModelChange={(i) => { setSelectedCars(i) }} />

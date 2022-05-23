@@ -25,6 +25,8 @@ import { DatePicker, DateTimePicker } from "@mui/x-date-pickers"
 import { CarFilterOptions } from "../../types/CarFilterOptions"
 import { CarInfo } from "./CarInfo"
 import { CarImage } from "./CarImage"
+import { useKeycloak } from "@react-keycloak/web"
+import { KeycloakLoginOptions } from "keycloak-js"
 
 const date = new Date()
 
@@ -47,6 +49,7 @@ const defaultFilter: CarFilterOptions = {
 
 export const Cars = () => {
   const { id } = useParams<{ id: string }>()
+  const { keycloak } = useKeycloak()
   const [cars, setCars] = useState<Car[]>()
   const [selectedCar, setSelectedCar] = useState<Car>({})
   const [addresses, setAddresses] = useState<Address[]>([])
@@ -70,9 +73,16 @@ export const Cars = () => {
   // Modal
   const [open, setOpen] = useState(false)
   const handleOpen = (carId: string) => {
-    setOrder({ ...order, carId: carId })
-    setSelectedCar(cars?.find(v => v.carId === carId)!)
-    setOpen(true)
+    if (keycloak.authenticated) {
+      setOrder({ ...order, carId: carId })
+      setSelectedCar(cars?.find(v => v.carId === carId)!)
+      setOpen(true)
+    } else {
+      const options: KeycloakLoginOptions = {
+        redirectUri: `http://localhost:3000/cars/${id}`
+      }
+      keycloak.login(options)
+    }
   }
   const handleClose = () => {
     setOrder({ ...defaultOrder, cityId: id, enhancements: [], totalAmount: 0 })
@@ -100,7 +110,6 @@ export const Cars = () => {
 
   const handleOrder = () => {
     const o = order
-    console.log({ ...o })
     const returnId = order.pickUpAddressId
     if (isSame) {
       o.returnAddressId = returnId

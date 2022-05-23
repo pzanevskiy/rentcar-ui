@@ -1,5 +1,5 @@
+import { Button } from "@mui/material"
 import { useKeycloak } from "@react-keycloak/web"
-import { Button } from "react-bootstrap"
 
 export const Logout = () => {
   const { keycloak, initialized } = useKeycloak()
@@ -11,7 +11,18 @@ export const Logout = () => {
 
   return (
     <div>
-      <Button onClick={logout} variant="danger">Logout</Button>
+      <Button variant="text" onClick={logout}
+        sx={{
+          mx: 2,
+          color: 'white',
+          "&:hover": {
+            background: 'white',
+            color: '#4caf50',
+            transition: 'all .3s',
+          }
+        }}>
+        Logout
+      </Button>
     </div>
   )
 }

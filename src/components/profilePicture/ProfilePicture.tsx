@@ -34,8 +34,6 @@ export const ProfilePicture = () => {
   const stringAvatar = (name: string) => {
     return {
       sx: {
-        width: 24,
-        height: 24,
         bgcolor: stringToColor(name),
         fontSize: 12
       },
@@ -60,7 +58,7 @@ export const ProfilePicture = () => {
       {
         avatar.length === 2 ?
           <Avatar {...stringAvatar(avatar)} /> :
-          <Avatar sx={{ width: 24, height: 24, fontSize: 12 }} src={avatar} />
+          <Avatar sx={{ fontSize: 12 }} src={avatar} />
       }
     </>
   )

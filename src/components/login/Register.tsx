@@ -1,5 +1,5 @@
+import { Button } from "@mui/material"
 import { useKeycloak } from "@react-keycloak/web"
-import { Button } from "react-bootstrap"
 
 export const Register = () => {
   const { keycloak } = useKeycloak()
@@ -9,7 +9,18 @@ export const Register = () => {
   }
   return (
     <>
-      <Button variant="warning" onClick={register}>Register</Button>
+      <Button variant="text" onClick={register}
+        sx={{
+          mr: 2,
+          color: 'white',
+          "&:hover": {
+            background: 'white',
+            color: '#4caf50',
+            transition: 'all .3s',
+          }
+        }}>
+        Register
+      </Button>
     </>
   )
 }
