@@ -1,8 +1,6 @@
 import { useKeycloak } from "@react-keycloak/web"
 import { Spinner } from "react-bootstrap"
 import { BrowserRouter, Route, Routes, } from 'react-router-dom'
-import { Hello, HelloComponent } from "./components/HelloUser"
-import { Login } from './components/login/Login'
 import { PrivateRoute } from "./utils/PrivateRoute"
 import { ChooseLocation } from './components/location/Location'
 import { Cars } from "./components/rentCars/Cars"
@@ -13,6 +11,7 @@ import { CarTypes } from "./components/CarTypes/AdminCarTypes"
 import { Orders } from "./components/orders/Orders"
 import { HomePage } from "./components/homePage/HomePage"
 import { AdminCity } from "./components/location/AdminCity"
+import { AdminOrders } from "./components/orders/AdminOrders"
 
 export const AppRoutes = () => {
   const { initialized, keycloak } = useKeycloak()
@@ -27,18 +26,20 @@ export const AppRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/location" element={<ChooseLocation />} />
         <Route path="/cars/:id" element={<Cars />} />
-        <Route path="/cars"
-          element={< PrivateRoute roles={['rentcar_admin']} element={<AdminCars />} />} />
-        <Route path="/brands"
-          element={< PrivateRoute roles={['rentcar_admin']} element={<Brands />} />} />
-        <Route path="/enhancements"
-          element={< PrivateRoute roles={['rentcar_admin']} element={<AdminEnhancements />} />} />
-        <Route path="/cartypes"
-          element={< PrivateRoute roles={['rentcar_admin']} element={<CarTypes />} />} />
+        <Route path="/admin/cars"
+          element={<PrivateRoute roles={['rentcar_admin']} element={<AdminCars />} />} />
+        <Route path="/admin/brands"
+          element={<PrivateRoute roles={['rentcar_admin']} element={<Brands />} />} />
+        <Route path="/admin/enhancements"
+          element={<PrivateRoute roles={['rentcar_admin']} element={<AdminEnhancements />} />} />
+        <Route path="/admin/cartypes"
+          element={<PrivateRoute roles={['rentcar_admin']} element={<CarTypes />} />} />
         <Route path="/orders"
-          element={< PrivateRoute roles={['rentcar_user']} element={<Orders />} />} />
-        <Route path="/city"
+          element={<PrivateRoute roles={['rentcar_user']} element={<Orders />} />} />
+        <Route path="/admin/city"
           element={<PrivateRoute roles={['rentcar_admin']} element={<AdminCity />} />} />
+        <Route path="/admin/orders"
+          element={<PrivateRoute roles={['rentcar_admin']} element={<AdminOrders />} />} />
       </Routes>
     </BrowserRouter>
   )

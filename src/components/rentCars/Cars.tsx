@@ -27,6 +27,7 @@ import { CarInfo } from "./CarInfo"
 import { CarImage } from "./CarImage"
 import { useKeycloak } from "@react-keycloak/web"
 import { KeycloakLoginOptions } from "keycloak-js"
+import { useSnackbar } from "notistack"
 
 const date = new Date()
 
@@ -69,6 +70,7 @@ export const Cars = () => {
   const [expanded, setExpanded] = useState<string | false>(false)
 
   const [isSame, setIsSame] = useState<boolean>(true);
+  const { enqueueSnackbar } = useSnackbar()
 
   // Modal
   const [open, setOpen] = useState(false)
@@ -119,10 +121,11 @@ export const Cars = () => {
 
     addOrder(order)
       .then((r: any) => {
-        console.log(`rent success! orderId - ${r.data}`)
+        enqueueSnackbar('Car has been rented!', { variant: 'success' })
         handleClose()
       })
       .catch((e: any) => {
+        enqueueSnackbar('Rent operation failed! Try again later.', { variant: 'error' })
         console.log('rent fail')
       })
   }
@@ -145,14 +148,11 @@ export const Cars = () => {
 
   const calculateTotalAmount = () => {
     const carPrice: number = selectedCar.price!
-    console.log(carPrice)
     const totalExtras = selectedEnh.reduce((acc: number, enh: Enhancement) => {
       return acc + enh?.price!
     }, carPrice!)
-    console.log(totalExtras)
     const diff = differenceInMilliseconds(order.endDate!, order.startDate!)
     const dayDiff: number = Math.ceil(diff / (1000 * 60 * 60 * 24))
-    console.log(`day diff - ${dayDiff}`)
 
     const totalAmount: number = dayDiff >= 0 ? parseFloat((totalExtras * dayDiff).toFixed(2)) : 0
 
@@ -169,6 +169,10 @@ export const Cars = () => {
           allowedTypes: cars?.map((car: Car) => car.type).filter((v, i, a) => a.indexOf(v) === i),
           allowedSeats: [0, ...cars?.map((car: Car) => car.seatsCount).filter((v, i, a) => a.indexOf(v) === i)]
         })
+      })
+      .catch(e => {
+        enqueueSnackbar('Load cars error! Try again later.', { variant: 'error' })
+        console.log({ ...e })
       })
   }
 
@@ -394,10 +398,11 @@ export const Cars = () => {
                         id={`${car.carId}-header`}
                       >
                         <Grid container>
-                          <Grid item xs={12}>
-                            <Typography variant="h5" align="center">{car.brand} {car.model}</Typography>
-                            <Typography variant="h5" align="center">{car.price}$</Typography>
-                          </Grid>
+                          {expanded !== car.carId &&
+                            <Grid item xs={12}>
+                              <Typography variant="h5" align="center">{car.brand} {car.model}</Typography>
+                              <Typography variant="h5" align="center">{car.price}$</Typography>
+                            </Grid>}
                           <Grid item xs={12}>
                             <CardMedia
                               sx={{ minHeight: '125px', maxHeight: '100%', maxWidth: '100%', display: 'block' }}

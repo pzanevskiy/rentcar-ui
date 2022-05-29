@@ -1,12 +1,14 @@
-import { List, ListItem, Typography } from "@mui/material"
+import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { Enhancement } from "../../api"
 
 export const EnhancementDetails = (props: { enhancements: Enhancement[] }) => {
   return (
-    <List>
+    <List disablePadding dense>
       {props.enhancements.length > 0 ? props.enhancements.map((e: Enhancement) => (
-        <ListItem key={e.enhancementId}>{e.description}</ListItem>
-      )) : (<Typography>No enhancements</Typography>)}
+        <ListItem key={e.enhancementId}>
+          <ListItemText primary={e.description} secondary={`Price - ${e.price}$`} />
+        </ListItem>
+      )) : (<ListItem><ListItemText primary={"No extras"}/></ListItem>)}
     </List>
   )
 }

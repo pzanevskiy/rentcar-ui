@@ -43,8 +43,7 @@ export const ChooseLocation = () => {
   }
   const navigate = useNavigate()
   const handle = (event: any) => {
-    event.preventDefault();
-    // navigate(`/hello/${cities.find((i: City) => i.cityName === city)?.countryId}`)
+    event.preventDefault()
     navigate(`/cars/${cities.find((i: City) => i.cityName === city)?.cityId}`)
   }
 
@@ -53,11 +52,11 @@ export const ChooseLocation = () => {
       <form onSubmit={handle}>
         <Grid container spacing={2} >
           <Grid item xs={12} mt={2}>
-            <Typography variant="h3" align="center">
+            <Typography variant="h4" align="center">
               Choose your location
             </Typography>
           </Grid>
-          <Grid item xs={isCity ? 6 : 12} sx={{ textAlign: 'center' }}>
+          <Grid item xs={12} md={isCity ? 6 : 12} sx={{ textAlign: 'center' }}>
             <FormControl sx={{ m: 1, minWidth: 300 }}>
               <InputLabel id="country-label">Country</InputLabel>
               <Select
@@ -76,7 +75,7 @@ export const ChooseLocation = () => {
             </FormControl>
           </Grid>
           {isCity ? (
-            <Grid item xs={6} sx={{ textAlign: 'center' }}>
+            <Grid item xs={12} md={5} sx={{ textAlign: 'center' }}>
               <FormControl sx={{ m: 1, minWidth: 300 }}>
                 <InputLabel id="city-label">City</InputLabel>
                 <Select

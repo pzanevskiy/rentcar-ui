@@ -73,3 +73,15 @@ export const getUserOrders = async () => {
 export const updateOrderStatus = async (orderId: string, statusName: string) => {
   return (await axiosProvider.put(`Orders/status/${orderId}/${statusName}`)).data
 }
+
+export const getAdminOrdersAll = async () => {
+  return (await axiosProvider.get('/Orders/admin/all')).data
+}
+
+export const getOrderById = async (orderId: string) => {
+  return (await axiosProvider.get(`/Orders/${orderId}`)).data
+}
+
+export const getOrderDetailedCost = async (orderId: string) => {
+  return (await axiosProvider.get(`/Orders/${orderId}/cost`)).data
+}

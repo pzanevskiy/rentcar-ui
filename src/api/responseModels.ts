@@ -56,25 +56,70 @@ export interface CarType {
 }
 
 export interface Order {
+  orderId?: string,
   carId: string,
   cityId?: string,
+  statusName?: string,
   pickUpAddressId?: string
   returnAddressId?: string,
   enhancements: string[],
   startDate?: Date | null,
   endDate?: Date | null,
-  totalAmount?: number
+  totalAmount?: number,
+  dateTimeCreated?: Date | null,
+  dateTimeFinished?: Date | null
+  hasPenalties?: boolean
 }
 
 export interface DetailedOrder {
   orderId: string,
-  userId: string,
+  user: User,
   statusName: string,
   startDate: Date | null,
   endDate: Date | null,
+  dateTimeCreated?: Date | null,
+  dateTimeFinished?: Date | null
   totalAmount: number
   pickUpLocation: string,
   returnLocation: string,
   car: Car,
+  enhancements: Enhancement[],
+  hasPenalties: boolean
+}
+
+export interface User {
+  userId: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  email: string,
+  loyalty?: LoayaltyProgram
+}
+
+export interface LoayaltyProgram {
+  loyaltyId: string,
+  loyaltyName: string,
+  discount: number
+}
+
+export interface AdminOrder {
+  order: Order,
+  user: User,
+}
+
+
+// Penalties
+export interface PrePenaltyOrderInfo {
+  orderId: string,
+  expirationDiff: number,
+  car: Car,
+  user: User,
   enhancements: Enhancement[]
+}
+
+export interface PenaltyInfo {
+  orderId?: string,
+  description?: string,
+  expirationCost: number,
+  additionalCost?: number
 }

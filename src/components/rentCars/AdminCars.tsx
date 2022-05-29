@@ -29,6 +29,7 @@ import { CarImage } from "./CarImage"
 const CustomNoRowsOverlay = () => {
   return (<><NoData message={`No cars available`} /></>)
 }
+
 const defaultCar: Car = {
   brand: '',
   model: '',

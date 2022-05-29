@@ -1,5 +1,5 @@
 import axiosProvider from "./axiosProvider"
-import { Car, Enhancement, Model, Order } from "./responseModels"
+import { Car, Enhancement, Model, Order, PenaltyInfo } from "./responseModels"
 
 export const addEnhancement = async (enhancement?: Enhancement) => {
   const data = new FormData()
@@ -29,7 +29,7 @@ export const addCarType = async (typeName: string) => {
 
 export const addCar = async (car: Car) => {
   return await axiosProvider.post('/Cars', car, {
-    headers:{
+    headers: {
       'Content-Type': 'application/json'
     }
   })
@@ -37,7 +37,15 @@ export const addCar = async (car: Car) => {
 
 export const addOrder = async (order: Order) => {
   return await axiosProvider.post('/Orders', order, {
-    headers:{
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const addPenalty = async (penaltyInfo: PenaltyInfo) => {
+  return await axiosProvider.post('Penalties', penaltyInfo, {
+    headers: {
       'Content-Type': 'application/json'
     }
   })
